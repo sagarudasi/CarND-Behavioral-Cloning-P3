@@ -82,19 +82,23 @@ model.add(Cropping2D(cropping=((ctop,cbottom), (cleft,cright)), input_shape=(inp
 model.add(Lambda(lambda x: x/127.5 - 1., input_shape=(input_channels, row, col), output_shape=(input_channels, row, col)))
 
 # Convolution layers 
-model.add(Conv2D(16,(3,3), activation='relu', input_shape=(input_channels, row,col)))
+model.add(Conv2D(24,(5,5), activation='relu', input_shape=(input_channels, row,col)))
 model.add(MaxPooling2D(pool_size=(2,2)))
-model.add(Dropout(0.25))
-model.add(Conv2D(32,(3,3), activation='relu'))
+model.add(Conv2D(36,(5,5), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2,2)))
-model.add(Dropout(0.25))
+model.add(Conv2D(48,(5,5), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
+model.add(Conv2D(64,(3,3), activation='relu'))
+model.add(Conv2D(64,(3,3), activation='relu'))
 
 # Flatten 
 model.add(Flatten())
 
 # Fully connected layers
-model.add(Dense(256, activation='relu'))
-model.add(Dense(64, activation='relu'))
+model.add(Dense(1164))
+model.add(Dense(100))
+model.add(Dense(50))
+model.add(Dense(10))
 model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
