@@ -7,14 +7,14 @@ from sklearn.utils import shuffle
 # Disable SSE warnings from tensorflow
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Cropping2D
+from keras.layers import Conv2D, MaxPooling2D, Cropping2D, Reshape
 from keras.layers import Dense, Dropout, Activation, Flatten, Lambda
 from keras import backend as k
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 samples = []
-basepath = "./dataset/"
+basepath = "./dataset_5/"
 
 # Load the data from CSV files into memory
 with open(basepath + 'driving_log.csv') as csvfile:
@@ -23,18 +23,18 @@ with open(basepath + 'driving_log.csv') as csvfile:
         samples.append(line)
 
 # Split the data into training set and validation set in 4:1 ratio
-train_samples, validation_samples = train_test_split(samples, test_size=0.3)
+train_samples, validation_samples = train_test_split(samples, test_size=0.2)
 
 # Decide hyperparameters 
-batch_size = 64
-epochs = 2
+batch_size = 128
+epochs = 10
 
 # original image dimensions
 orow, ocol = 160, 320
 input_channels = 3
 
 # Cropping2D parameters
-ctop = 60
+ctop = 50
 cbottom = 20
 cleft = 0
 cright = 0
@@ -63,7 +63,7 @@ def generator(samples, batch_size=32):
             y_train = np.array(angles)
 
             # Reshape images for channels_first data format
-            X_train = X_train.reshape(X_train.shape[0], X_train.shape[3], X_train.shape[1], X_train.shape[2])
+            #X_train = X_train.reshape(X_train.shape[0], X_train.shape[3], X_train.shape[1], X_train.shape[2])
 
             yield sklearn.utils.shuffle(X_train, y_train)
 
@@ -78,11 +78,13 @@ k.set_image_data_format('channels_first')
 model = Sequential()
 
 # Preprocessing 
+model.add(Lambda(lambda x: x/127.5 - 1., input_shape=(orow, ocol, input_channels), output_shape=(orow, ocol, input_channels)))
+model.add(Reshape((input_channels, orow, ocol)))
 model.add(Cropping2D(cropping=((ctop,cbottom), (cleft,cright)), input_shape=(input_channels, orow, ocol)))
-model.add(Lambda(lambda x: x/127.5 - 1., input_shape=(input_channels, row, col), output_shape=(input_channels, row, col)))
+
 
 # Convolution layers 
-model.add(Conv2D(24,(5,5), activation='relu', input_shape=(input_channels, row,col)))
+model.add(Conv2D(24,(5,5), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2,2)))
 model.add(Conv2D(36,(5,5), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2,2)))
@@ -95,14 +97,17 @@ model.add(Conv2D(64,(3,3), activation='relu'))
 model.add(Flatten())
 
 # Fully connected layers
-model.add(Dense(1164))
-model.add(Dense(100))
-model.add(Dense(50))
-model.add(Dense(10))
+model.add(Dense(1164, activation='relu'))
+model.add(Dense(100, activation='relu'))
+model.add(Dense(50, activation='relu'))
+model.add(Dense(10, activation='relu'))
 model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
 history_object = model.fit_generator(train_generator, steps_per_epoch=(len(train_samples)/batch_size), validation_data=validation_generator, validation_steps=(len(validation_samples)/batch_size), epochs=epochs)
+
+# Save model
+model.save('./model.h5')
 
 ### plot the training and validation loss for each epoch
 plt.plot(history_object.history['loss'])
