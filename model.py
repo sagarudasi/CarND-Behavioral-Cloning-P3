@@ -62,9 +62,6 @@ def generator(samples, batch_size=32):
             X_train = np.array(images)
             y_train = np.array(angles)
 
-            # Reshape images for channels_first data format
-            #X_train = X_train.reshape(X_train.shape[0], X_train.shape[3], X_train.shape[1], X_train.shape[2])
-
             yield sklearn.utils.shuffle(X_train, y_train)
 
 # compile and train the model using the generator function
