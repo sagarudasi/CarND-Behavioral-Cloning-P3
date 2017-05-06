@@ -36,7 +36,7 @@ The goals / steps of this project are the following:
 Main project files:
 * model.py containing the script to create and train the model
 * drive.py for driving the car in autonomous mode
-* model.h5 containing a trained convolution neural network (https://drive.google.com/open?id=0B8ZLsM_0WsDSUG5uemtvYXVDQ00)
+* model.h5 containing a trained convolution neural network (https://drive.google.com/open?id=0B8ZLsM_0WsDSNDlJU2k4bGJvNzg)
 * writeup_report.md or writeup_report.pdf summarizing the results
 
 Additional files: (Uploaded on Google Drive): https://drive.google.com/open?id=0B8ZLsM_0WsDSUG5uemtvYXVDQ00 
