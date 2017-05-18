@@ -24,6 +24,7 @@ The goals / steps of this project are the following:
 [image4]: ./examples/recovery_3.jpg "Recovery Image"
 [image5]: ./examples/offtrack_1.jpg "Off track 1"
 [image6]: ./examples/offtrack_2.jpg "Off track 2"
+[image7]: ./examples/cropped.jpg "Cropped image"
 
 ## Rubric Points
 ###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
@@ -66,7 +67,7 @@ For recording the run use the below alternative command
 python drive.py model.h5 recordingdirectory
 ```
 
-This will generate JPEG images of the run. 
+This will generate JPEG images of the run.
 
 ####3. Submission code is usable and readable
 
@@ -76,6 +77,8 @@ Comments are also provided at the start of following sections - Deciding hyperpa
 Script to drive the file i.e. drive.py is not modified and can be used as is to run the car in simulator.
 
 ###Model Architecture and Training Strategy
+
+####1. An appropriate model architecture has been employed
 
 My model was based on NVIDIA's model and it consists of the following layes -
 
@@ -99,14 +102,77 @@ My model was based on NVIDIA's model and it consists of the following layes -
 
 All the layers except the last one uses RELU for activation. Last layer uses linear activation function for output.
 
-Apart from these layers, few more layers were added on top of the model for cropping and normalization.
+####2. Attempts to reduce overfitting in the model
+
+I trained the model for 20 iterations and saw the model was overfitting and the difference between the validation set and train set was increasing.
+
+I decided to lower down the iterations to 10 in order to avoid overfitting of data.
+
+Another way of avoiding overfitting is adding dropout layers. 
+
+Dropout layers can be added using the following function of keras 
+
+```python 
+dropout(rate, noise_shape=None, seed=None)
+```
+
+Initially I added dropout to the first fully connected layer. However, with the amount of data recording and iterations used, I saw the dropout not contributing significantly hence removed those layers.
+
+####3. Model parameter tuning
+
+Adam optimizer was used as an optimizer function. Adam optimizer uses decaying learning rate which results in smooth and consistent train validation loss during the last cycles of training.
+Another optimizer which could have been used is SGD Stochastic gradient descent optimizer. Keras function for the same is SGD(lr=0.01, momentum=0.0, decay=0.0, nesterov=False)
+
+Batch size of 128 was used in-order to let the network converge better at once.
+
+Also, as described in the above section, the number of epochs used were 10.
+ 
+
+####4. Appropriate training data
+
+Training scenarios included driving in center of lane, driving in the opposite direction and recovery scenarios.
+It was also taken care that while recording the training data, there are no mistakes like driving off the road which may result in incorrect learning.
+
+Training data was also pre-processed by cropping ROI (region of interest) and then it was used for training.
+
+Following the final cropped image used - 
+
+![Cropped image][image7]
+
+###Model Architecture and Training Strategy
+
+####1. Solution Design Approach
+
+The input to the network was going to be a 2D image.
+
+The output expected is a steering angle which can be used by car to steer it on the road.
+
+So we need to design a network that properly maps the two dimensional color image to steering angle which is in float.
+
+The best solution which can be deployed for 2D images is by applying convolution and then boil down the data to the required value.
+
+Hence, convolution layers were used.
+
+Also in the process of boiling the data down through the network, since we need one value at the end, we need to flatten the network and gradually get the desired output.
+
+For this purpose, dense layers were added to the network.
+
+####2. Final Model Architecture
+
+My final model can be found from line number 75 to 101 in model.py. Basically its the NVIDIA network modified a little bit by adding few layers.
+
+Apart from NVIDIA network layers, few more layers were added on top of the model for cropping and normalization.
+
+```python
+model.add(Lambda(lambda x: x/127.5 - 1., input_shape=(orow, ocol, input_channels), output_shape=(orow, ocol, input_channels)))
+model.add(Reshape((input_channels, orow, ocol)))
+model.add(Cropping2D(cropping=((ctop,cbottom), (cleft,cright)), input_shape=(input_channels, orow, ocol)))
+```
+
+So the final model architecture consisted of 5 convolution layers and 5 dense layers along with 2 pre-processing layers.
 
 Following is the model visualization created using keras.utils.vis_utils -
-![alt text][image1]
-
-I used batch size of 128 to train the network for over 10 iteration which reduced the validation loss to less ~ 0.018.
-
-There was no need to define learning rate as Adam optimizer was involved and loss function used was "Mean squared error".
+![Model visualization][image1]
 
 ####3. Creation of the Training Set & Training Process
 
