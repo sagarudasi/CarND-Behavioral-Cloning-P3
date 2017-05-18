@@ -1,8 +1,8 @@
-#**Behavioral Cloning** 
+# **Behavioral Cloning** 
 
-##Writeup Template
+## Writeup
 
-###You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
+### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
 
 ---
 
@@ -30,9 +30,9 @@ The goals / steps of this project are the following:
 ###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
 
 ---
-###Files Submitted & Code Quality
+### Files Submitted & Code Quality
 
-####1. Submission includes all required files and can be used to run the simulator in autonomous mode
+#### 1. Submission includes all required files and can be used to run the simulator in autonomous mode
 
 Main project files:
 * model.py containing the script to create and train the model
@@ -44,7 +44,7 @@ Additional files: (Uploaded on Google Drive): https://drive.google.com/open?id=0
 * Compressed images dataset used for training
 * Video recording of autonomous mode driving  
 
-####2. Submission includes functional code
+#### 2. Submission includes functional code
 
 Following are the steps which can be followed to generate the model from the dataset 
 * Download the compressed images dataset and extract it in the same directory where python files are kept 
@@ -69,16 +69,16 @@ python drive.py model.h5 recordingdirectory
 
 This will generate JPEG images of the run.
 
-####3. Submission code is usable and readable
+#### 3. Submission code is usable and readable
 
 Python file to generate the model is model.py in which I have provided comments at necessary places. 
 Comments are also provided at the start of following sections - Deciding hyperparameters, reading dataset, pre-processing, convolution layers, dense layers etc.
 
 Script to drive the file i.e. drive.py is not modified and can be used as is to run the car in simulator.
 
-###Model Architecture and Training Strategy
+### Model Architecture and Training Strategy
 
-####1. An appropriate model architecture has been employed
+#### 1. An appropriate model architecture has been employed
 
 My model was based on NVIDIA's model and it consists of the following layes -
 
@@ -102,7 +102,7 @@ My model was based on NVIDIA's model and it consists of the following layes -
 
 All the layers except the last one uses RELU for activation. Last layer uses linear activation function for output.
 
-####2. Attempts to reduce overfitting in the model
+#### 2. Attempts to reduce overfitting in the model
 
 I trained the model for 20 iterations and saw the model was overfitting and the difference between the validation set and train set was increasing.
 
@@ -118,7 +118,7 @@ dropout(rate, noise_shape=None, seed=None)
 
 Initially I added dropout to the first fully connected layer. However, with the amount of data recording and iterations used, I saw the dropout not contributing significantly hence removed those layers.
 
-####3. Model parameter tuning
+#### 3. Model parameter tuning
 
 Adam optimizer was used as an optimizer function. Adam optimizer uses decaying learning rate which results in smooth and consistent train validation loss during the last cycles of training.
 Another optimizer which could have been used is SGD Stochastic gradient descent optimizer. Keras function for the same is SGD(lr=0.01, momentum=0.0, decay=0.0, nesterov=False)
@@ -128,7 +128,7 @@ Batch size of 128 was used in-order to let the network converge better at once.
 Also, as described in the above section, the number of epochs used were 10.
  
 
-####4. Appropriate training data
+#### 4. Appropriate training data
 
 Training scenarios included driving in center of lane, driving in the opposite direction and recovery scenarios.
 It was also taken care that while recording the training data, there are no mistakes like driving off the road which may result in incorrect learning.
@@ -139,9 +139,9 @@ Following the final cropped image used -
 
 ![Cropped image][image7]
 
-###Model Architecture and Training Strategy
+### Model Architecture and Training Strategy
 
-####1. Solution Design Approach
+#### 1. Solution Design Approach
 
 The input to the network was going to be a 2D image.
 
@@ -157,7 +157,7 @@ Also in the process of boiling the data down through the network, since we need 
 
 For this purpose, dense layers were added to the network.
 
-####2. Final Model Architecture
+#### 2. Final Model Architecture
 
 My final model can be found from line number 75 to 101 in model.py. Basically its the NVIDIA network modified a little bit by adding few layers.
 
@@ -174,7 +174,7 @@ So the final model architecture consisted of 5 convolution layers and 5 dense la
 Following is the model visualization created using keras.utils.vis_utils -
 ![Model visualization][image1]
 
-####3. Creation of the Training Set & Training Process
+#### 3. Creation of the Training Set & Training Process
 
 To create the training set, I recorded images by driving two laps in one direction and two laps in opposite directions.
 
